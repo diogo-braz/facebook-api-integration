@@ -21,6 +21,7 @@ module.exports = {
     "@typescript-eslint/space-before-function-paren": "error",
     "@typescript-eslint/no-extra-semi": "error",
     "@typescript-eslint/object-curly-spacing": ["error", "always"],
-    "@typescript-eslint/comma-dangle": ["error", "never"]
+    "@typescript-eslint/comma-dangle": ["error", "never"],
+    "@typescript-eslint/consistent-type-definitions": "off"
   }
 };
