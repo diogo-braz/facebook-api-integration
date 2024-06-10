@@ -1,10 +1,18 @@
-import { mock } from "jest-mock-extended";
+import { MockProxy, mock } from "jest-mock-extended";
 
 import { LoadFacebookUserApi } from "@/data/contracts/apis";
 import { FacebookAuthenticationService } from "@/data/services";
 import { AuthenticationError } from "@/domain/errors";
 
 describe("FacebookAuthenticationService", () => {
+  let loadFacebookUserApi: MockProxy<LoadFacebookUserApi>;
+  let sut: FacebookAuthenticationService;
+
+  beforeEach(() => {
+    loadFacebookUserApi = mock();
+    sut = new FacebookAuthenticationService(loadFacebookUserApi);
+  });
+
   it("should call LoadFacebookUserApi with correct params", async () => {
     const loadFacebookUserApi = mock<LoadFacebookUserApi>();
     const sut = new FacebookAuthenticationService(loadFacebookUserApi);
