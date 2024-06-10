@@ -22,6 +22,8 @@ module.exports = {
     "@typescript-eslint/no-extra-semi": "error",
     "@typescript-eslint/object-curly-spacing": ["error", "always"],
     "@typescript-eslint/comma-dangle": ["error", "never"],
-    "@typescript-eslint/consistent-type-definitions": "off"
+    "@typescript-eslint/consistent-type-definitions": "off",
+    "@typescript-eslint/no-empty-function": "off",
+    "@typescript-eslint/require-await": "off"
   }
 };
