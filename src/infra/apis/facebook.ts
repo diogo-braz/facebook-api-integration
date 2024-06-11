@@ -20,12 +20,21 @@ export class FacebookApi {
         grant_type: "client_credentials"
       }
     });
-    await this.httpClient.get({
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const debugToken = await this.httpClient.get({
       url: `${this.baseUrl}/debug_token`,
       params: {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
         access_token: appToken.access_token,
         input_token: params.token
+      }
+    });
+    await this.httpClient.get({
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      url: `${this.baseUrl}/${debugToken.data.user_id}`,
+      params: {
+        fields: ["id", "name", "email"].join(","),
+        access_token: params.token
       }
     });
   }
