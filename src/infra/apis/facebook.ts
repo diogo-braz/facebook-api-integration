@@ -1,7 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+
 import { HttpGetClient } from "@/infra/http";
 import { LoadFacebookUserApi } from "@/data/contracts/apis";
 
-export class FacebookApi {
+export class FacebookApi implements LoadFacebookUserApi {
   private readonly baseUrl = "https://graph.facebook.com";
 
   constructor (
@@ -10,8 +13,7 @@ export class FacebookApi {
     private readonly clientSecret: string,
   ) {}
 
-  async loadUser (params: LoadFacebookUserApi.Params): Promise<void> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  async loadUser (params: LoadFacebookUserApi.Params): Promise<LoadFacebookUserApi.Result> {
     const appToken = await this.httpClient.get({
       url: `${this.baseUrl}/oauth/access_token`,
       params: {
@@ -20,22 +22,25 @@ export class FacebookApi {
         grant_type: "client_credentials"
       }
     });
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const debugToken = await this.httpClient.get({
       url: `${this.baseUrl}/debug_token`,
       params: {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
         access_token: appToken.access_token,
         input_token: params.token
       }
     });
-    await this.httpClient.get({
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const userInfo = await this.httpClient.get({
       url: `${this.baseUrl}/${debugToken.data.user_id}`,
       params: {
         fields: ["id", "name", "email"].join(","),
         access_token: params.token
       }
     });
+
+    return {
+      facebookId: userInfo?.id,
+      name: userInfo?.name,
+      email: userInfo?.email
+    };
   }
 }
