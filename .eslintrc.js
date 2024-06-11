@@ -24,6 +24,7 @@ module.exports = {
     "@typescript-eslint/comma-dangle": ["error", "never"],
     "@typescript-eslint/consistent-type-definitions": "off",
     "@typescript-eslint/no-empty-function": "off",
-    "@typescript-eslint/require-await": "off"
+    "@typescript-eslint/require-await": "off",
+    "@typescript-eslint/unbound-method": "off"
   }
 };
