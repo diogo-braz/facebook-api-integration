@@ -1,72 +1,51 @@
-import { IBackup, newDb } from "pg-mem";
+import { IBackup, IMemoryDb, newDb } from "pg-mem";
+import { DataSource, Repository } from "typeorm";
 
-import { LoadUserAccountRepository } from "@/data/contracts/repositories";
-import { Column, DataSource, Entity, PrimaryGeneratedColumn, Repository } from "typeorm";
+import { PgUser } from "@/infra/postgres/entities";
+import { PgUserAccountRepository } from "@/infra/postgres/repositories";
 
-class PgUserAccountRepository implements LoadUserAccountRepository {
-  constructor (private readonly userRepository: Repository<PgUser>) {}
-
-  async load (params: LoadUserAccountRepository.Params): Promise<LoadUserAccountRepository.Result> {
-    const user = await this.userRepository.findOneBy({ email: params.email });
-    if (user) {
-      return {
-        id: user?.id.toString(),
-        name: user?.name ?? undefined
-      };
+const makeFakeDb = async (entities?: any): Promise<{ db: IMemoryDb, dataSource: DataSource }> => {
+  const db = newDb();
+  db.public.registerFunction({
+    implementation: () => "test",
+    name: "current_database"
+  });
+  db.public.registerFunction({
+    implementation: () => "version",
+    name: "version"
+  });
+  db.public.interceptQueries((queryText) => {
+    if (
+      queryText.search(
+        /(pg_views|pg_matviews|pg_tables|pg_enum|table_schema)/g
+      ) > -1
+    ) {
+      return [];
     }
+    return null;
+  });
+  const dataSource: DataSource = await db.adapters.createTypeormDataSource({
+    type: "postgres",
+    entities: entities ?? ["src/infra/postgres/entities/index.ts"]
+  });
+  await dataSource.initialize();
+  await dataSource.synchronize();
 
-    return;
-  }
-}
-
-@Entity({ name: "usuarios" })
-export class PgUser {
-    @PrimaryGeneratedColumn()
-    id!: number;
-
-    @Column({ name: "nome", nullable: true })
-    name?: string;
-
-    @Column()
-    email!: string;
-
-    @Column({ name: "id_facebook", nullable: true })
-    facebookId?: number;
-}
+  return { db, dataSource };
+};
 
 describe("PgUserAccountRepository", () => {
   describe("load", () => {
     let sut: PgUserAccountRepository;
     let dataSource: DataSource;
+    let db: IMemoryDb;
     let pgUserRepository: Repository<PgUser>;
     let backup: IBackup;
 
     beforeAll(async () => {
-      const db = newDb();
-      db.public.registerFunction({
-        implementation: () => "test",
-        name: "current_database"
-      });
-      db.public.registerFunction({
-        implementation: () => "version",
-        name: "version"
-      });
-      db.public.interceptQueries((queryText) => {
-        if (
-          queryText.search(
-            /(pg_views|pg_matviews|pg_tables|pg_enum|table_schema)/g
-          ) > -1
-        ) {
-          return [];
-        }
-        return null;
-      });
-      dataSource = await db.adapters.createTypeormDataSource({
-        type: "postgres",
-        entities: [PgUser]
-      });
-      await dataSource.initialize();
-      await dataSource.synchronize();
+      const result = await makeFakeDb([PgUser]);
+      db = result.db;
+      dataSource = result.dataSource;
       backup = db.backup();
       pgUserRepository = dataSource.getRepository(PgUser);
     });
