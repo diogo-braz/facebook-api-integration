@@ -6,30 +6,30 @@ import { PgUserAccountRepository } from "@/infra/postgres/repositories";
 import { makeFakeDb } from "@/tests/infra/postgres/mocks";
 
 describe("PgUserAccountRepository", () => {
+  let sut: PgUserAccountRepository;
+  let dataSource: DataSource;
+  let db: IMemoryDb;
+  let pgUserRepository: Repository<PgUser>;
+  let backup: IBackup;
+
+  beforeAll(async () => {
+    const result = await makeFakeDb([PgUser]);
+    db = result.db;
+    dataSource = result.dataSource;
+    backup = db.backup();
+    pgUserRepository = dataSource.getRepository(PgUser);
+  });
+
+  afterAll(async () => {
+    await dataSource.destroy();
+  });
+
+  beforeEach(() => {
+    backup.restore();
+    sut = new PgUserAccountRepository(pgUserRepository);
+  });
+
   describe("load", () => {
-    let sut: PgUserAccountRepository;
-    let dataSource: DataSource;
-    let db: IMemoryDb;
-    let pgUserRepository: Repository<PgUser>;
-    let backup: IBackup;
-
-    beforeAll(async () => {
-      const result = await makeFakeDb([PgUser]);
-      db = result.db;
-      dataSource = result.dataSource;
-      backup = db.backup();
-      pgUserRepository = dataSource.getRepository(PgUser);
-    });
-
-    afterAll(async () => {
-      await dataSource.destroy();
-    });
-
-    beforeEach(() => {
-      backup.restore();
-      sut = new PgUserAccountRepository(pgUserRepository);
-    });
-
     it("should return an account if email exists", async () => {
       await pgUserRepository.save({ email: "any_email" });
 
