@@ -8,12 +8,14 @@ class PgUserAccountRepository implements LoadUserAccountRepository {
 
   async load (params: LoadUserAccountRepository.Params): Promise<LoadUserAccountRepository.Result> {
     const user = await this.userRepository.findOneBy({ email: params.email });
-    if (user !== undefined) {
+    if (user) {
       return {
-        id: user!.id.toString(),
+        id: user?.id.toString(),
         name: user?.name ?? undefined
       };
     }
+
+    return;
   }
 }
 
@@ -72,6 +74,45 @@ describe("PgUserAccountRepository", () => {
 
       const account = await sut.load({ email: "existing_email" });
       expect(account).toEqual({ id: "1" });
+      await dataSource.destroy();
+    });
+
+    it("should return undefined if email does not exists", async () => {
+      const db = newDb();
+      db.public.registerFunction({
+        implementation: () => "test",
+        name: "current_database"
+      });
+      db.public.registerFunction({
+        implementation: () => "version",
+        name: "version"
+      });
+
+      db.public.interceptQueries((queryText) => {
+        if (
+          queryText.search(
+            /(pg_views|pg_matviews|pg_tables|pg_enum|table_schema)/g
+          ) > -1
+        ) {
+          return [];
+        }
+        return null;
+      });
+
+      const dataSource: DataSource = await db.adapters.createTypeormDataSource({
+        type: "postgres",
+        entities: [PgUser]
+      });
+      await dataSource.initialize();
+      await dataSource.synchronize();
+
+      const usersRepo = dataSource.getRepository(PgUser);
+
+      const sut = new PgUserAccountRepository(usersRepo);
+
+      const account = await sut.load({ email: "new_email" });
+      expect(account).toBeUndefined();
+      await dataSource.destroy();
     });
   });
 });
