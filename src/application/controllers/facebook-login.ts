@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import { HttpResponse, badRequest, serverError, unauthorized } from "@/application/helpers";
+import { HttpResponse, badRequest, ok, serverError, unauthorized } from "@/application/helpers";
 import { RequiredFieldError } from "@/application/errors";
 import { FacebookAuthentication } from "@/domain/features";
 import { AccessToken } from "@/domain/models";
@@ -16,12 +16,9 @@ export class FacebookLoginController {
       }
       const accessToken = await this.facebookAuthentication.perform({ token: httpRequest.token });
       if (accessToken instanceof AccessToken) {
-        return {
-          statusCode: 200,
-          data: {
-            accessToken: accessToken.value
-          }
-        };
+        return ok({
+          accessToken: accessToken.value
+        });
       } else {
         return unauthorized();
       }
