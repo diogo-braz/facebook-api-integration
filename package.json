@@ -1,5 +1,5 @@
 {
-  "name": "",
+  "name": "facebook-api-integration",
   "version": "0.0.1",
   "scripts": {
     "start": "node dist/main/api",
