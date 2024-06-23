@@ -11,6 +11,7 @@
     "test:watch": "npm t -- --watch",
     "test:staged": "npm t -- --findRelatedTests",
     "test:coverage": "npm t -- --coverage",
+    "test:middlewares": "npm t -- --config ./jest.integration.config.js ./tests/main/middlewares",
     "test:fb-api": "npm t -- --config ./jest.integration.config.js ./tests/external/facebook-api.test.ts"
   },
   "keywords": [],
@@ -26,6 +27,7 @@
     "@types/jsonwebtoken": "^9.0.6",
     "@types/module-alias": "^2.0.4",
     "@types/node": "^20.12.7",
+    "@types/supertest": "^6.0.2",
     "@typescript-eslint/eslint-plugin": "^7.8.0",
     "@typescript-eslint/parser": "^7.8.0",
     "eslint": "^8.57.0",
@@ -34,6 +36,7 @@
     "lefthook": "^1.6.15",
     "pg-mem": "^2.8.1",
     "rimraf": "^5.0.5",
+    "supertest": "^7.0.0",
     "ts-jest": "^29.1.2",
     "typescript": "^5.4.5"
   },
