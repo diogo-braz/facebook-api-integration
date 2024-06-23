@@ -1,6 +1,7 @@
 import express from "express";
-import { cors } from "@/main/middlewares";
+import { cors, bodyParser } from "@/main/middlewares";
 
 const app = express();
 app.use(cors);
+app.use(bodyParser);
 export default app;
