@@ -7,18 +7,16 @@ describe("PrismaUserAccount Repository", () => {
   let sut: PrismaUserAccountRepository;
   let prisma: PrismaClient;
 
-  beforeEach(async () => {
-    sut = new PrismaUserAccountRepository();
+  beforeAll(async () => {
     prisma = await PrismaHelper.connect();
   });
 
-  afterAll(async () => {
-    await PrismaHelper.disconnect();
+  beforeEach(async () => {
+    sut = new PrismaUserAccountRepository();
+    await prisma.account.deleteMany({});
   });
 
-  afterEach(async () => {
-    const prisma = await PrismaHelper.connect();
-    await prisma.account.deleteMany({});
+  afterAll(async () => {
     await PrismaHelper.disconnect();
   });
 
