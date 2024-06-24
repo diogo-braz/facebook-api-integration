@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 
-import { JwtTokenGenerator } from "@/data/contracts/crypto";
+import { JwtTokenGenerator } from "@/infra/crypto";
 
 jest.mock("jsonwebtoken");
 

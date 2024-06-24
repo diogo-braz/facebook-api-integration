@@ -1,4 +1,4 @@
-import { JwtTokenGenerator } from "@/data/contracts/crypto";
+import { JwtTokenGenerator } from "@/infra/crypto";
 import { env } from "@/main/config/env";
 
 export const makeJwtTokenGenerator = (): JwtTokenGenerator => {

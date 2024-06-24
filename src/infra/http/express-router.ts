@@ -4,12 +4,9 @@ import { RequestHandler } from "express";
 
 export const adaptExpressRoute = (controller: Controller): RequestHandler => {
   return (async (req, res) => {
-    const httpResponse = await controller.handle({ ...req.body });
-    if (httpResponse.statusCode === 200) {
-      res.status(200).json(httpResponse.data);
-    } else {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      res.status(httpResponse.statusCode).json({ error: httpResponse.data.message });
-    }
+    const { statusCode, data } = await controller.handle({ ...req.body });
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const json = statusCode === 200 ? data : { error: data.message };
+    res.status(statusCode).json(json);
   }) as RequestHandler;
 };
