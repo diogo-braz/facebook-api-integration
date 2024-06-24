@@ -1,1 +1,1 @@
-export * from "./pg-user-account";
+export * from "./prisma-user-account";
