@@ -1,8 +1,8 @@
-import express from "express";
-import { cors, bodyParser, contentType } from "@/main/middlewares";
+import express, { Router } from "express";
+import { setupMiddlewares } from "./middlewares";
+import { setupRoutes } from "./routes";
 
 const app = express();
-app.use(cors);
-app.use(bodyParser);
-app.use(contentType);
+setupMiddlewares(app);
+setupRoutes(app);
 export default app;
