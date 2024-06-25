@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { RequestHandler } from "express";
 
 import { Middleware } from "@/application/middlewares";
@@ -12,6 +13,6 @@ export const adaptExpressMiddleware: Adapter = middleware => async (req, res, ne
     req.locals = { ...req.locals, ...Object.fromEntries(entries) };
     next();
   } else {
-    res.status(statusCode).json(data);
+    res.status(statusCode).json({ error: data.message });
   }
 };
