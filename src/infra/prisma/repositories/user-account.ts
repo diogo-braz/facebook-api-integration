@@ -1,5 +1,6 @@
-import { LoadUserAccountRepository, SaveFacebookAccountRepository } from "@/data/contracts/repositories";
 import { PrismaClient } from "@prisma/client";
+
+import { LoadUserAccountRepository, SaveFacebookAccountRepository } from "@/domain/contracts/repositories";
 
 export class PrismaUserAccountRepository implements LoadUserAccountRepository, SaveFacebookAccountRepository {
   private readonly prisma: PrismaClient;
